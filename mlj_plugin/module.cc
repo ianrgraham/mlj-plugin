@@ -6,8 +6,10 @@
 #include "hoomd/md/PotentialPair.h"
 
 #include <pybind11/pybind11.h>
+// #include <hoomd/extern/pybind/include/pybind11/pybind11.h>
+namespace py = pybind11;
 
-#define ENABLE_HIP // to test
+// #define ENABLE_HIP // to test
 
 #ifdef ENABLE_HIP
 #include "hoomd/md/PotentialPairGPU.h"

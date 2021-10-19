@@ -7,7 +7,7 @@ set(_${COMPONENT_NAME}_sources
     )
 
 set(_${COMPONENT_NAME}_cu_sources
-    mLJDriverPotentialPairGPU.cu
+#     mLJDriverPotentialPairGPU.cu
     )
 
 if (ENABLE_HIP)
