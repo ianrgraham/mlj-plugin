@@ -215,7 +215,11 @@ class EvaluatorPairmLJ
         // compute the force divided by r in force_divr
         if (rsq < rcutsq && lj1 != 0)
             {
-            Scalar r2inv = Scalar(1.0) / rsq;
+            // Next two lines are the only deliniation from the LJ potential
+            // original: Scalar r2inv = Scalar(1.0) / rsq;
+            Scalar rinv = Scalar(1.0) / (fast::sqrt(rsq) - dlt); 
+            Scalar r2inv = rinv * rinv;
+            
             Scalar r6inv = r2inv * r2inv * r2inv;
             force_divr = r2inv * r6inv * (Scalar(12.0) * lj1 * r6inv - Scalar(6.0) * lj2);
 

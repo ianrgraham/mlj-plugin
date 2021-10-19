@@ -5,7 +5,7 @@
     \brief Defines the driver functions for computing all types of pair forces on the GPU
 */
 
-#include "hoomd/md/AllDriverPotentialPairGPU.cuh"
+#include "mLJDriverPotentialPairGPU.cuh"
 #include "EvaluatorPairmLJ.h"
 hipError_t gpu_compute_mljtemp_forces(const pair_args_t& pair_args,
                                      const EvaluatorPairmLJ::param_type* d_params)

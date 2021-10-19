@@ -1,14 +1,13 @@
-# Maintainer: mspells
+# Maintainer: ianrgraham
 
-set(COMPONENT_NAME example_plugin)
+set(COMPONENT_NAME mlj_plugin)
 
 set(_${COMPONENT_NAME}_sources
     module.cc
-    EvaulatorPairmLJ.cc
     )
 
 set(_${COMPONENT_NAME}_cu_sources
-    ExampleUpdater.cu
+    mLJDriverPotentialPairGPU.cu
     )
 
 if (ENABLE_HIP)
@@ -39,7 +38,7 @@ install(TARGETS _${COMPONENT_NAME}
 # copy python modules to the build directory to make it a working python package
 set(files
     __init__.py
-    update.py
+    pair.py
     )
 
 install(FILES ${files}

@@ -4,15 +4,19 @@
 // Include the defined classes that are to be exported to python
 #include "mLJPotential.h"
 #include "hoomd/md/PotentialPair.h"
-#include "hoomd/md/PotentialPairGPU.h"
 
 #include <pybind11/pybind11.h>
 
-// #define ENABLE_HIP // to test
+#define ENABLE_HIP // to test
+
+#ifdef ENABLE_HIP
+#include "hoomd/md/PotentialPairGPU.h"
+#include "mLJDriverPotentialPairGPU.cuh"
+#endif
 
 // specify the python module. Note that the name must explicitly match the PROJECT() name provided
 // in CMakeLists (with an underscore in front)
-PYBIND11_MODULE(mLJ_plugin, m)
+PYBIND11_MODULE(_mlj_plugin, m)
     {
     export_PotentialPair<PotentialPairmLJ>(m, "PotentialPairmLJ");
 

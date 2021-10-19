@@ -8,7 +8,7 @@
 // #define ENABLE_HIP // to test
 
 #ifdef ENABLE_HIP
-#include "hoomd/md/AllDriverPotentialPairGPU.cuh"
+#include "mLJDriverPotentialPairGPU.cu"
 #include "hoomd/md/PotentialPairGPU.h"
 #endif
 
@@ -25,4 +25,4 @@ typedef PotentialPair<EvaluatorPairmLJ> PotentialPairmLJ;
 typedef PotentialPairGPU<EvaluatorPairmLJ, gpu_compute_ljtemp_forces> PotentialPairmLJGPU;
 #endif
 
-#endif // __PAIR_POTENTIALS_H__
+#endif // _MLJ_PAIR_POTENTIAL_H__

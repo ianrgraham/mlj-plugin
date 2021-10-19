@@ -16,6 +16,7 @@ from hoomd.data.typeparam import TypeParameter
 import numpy as np
 from hoomd.data.typeconverter import (OnlyFrom, OnlyTypes, nonnegative_real)
 import hoomd.md.pair as _pair
+from hoomd.mlj_plugin import _mlj_plugin
 
 validate_nlist = OnlyTypes(NList)
 
@@ -63,8 +64,14 @@ class mLJ(_pair.Pair):
         nl = nlist.Cell()
         lj = pair.mLJ(nl, default_r_cut=2.5)
         lj.params[('A', 'A')] = {'sigma': 1.0, 'epsilon': 1.0, 'delta': 0.25}
-        lj.r_cut[('A', 'B')] = 2.5
+        lj.r_cut[('A', 'A')] = 2.5
     """
+
+    # If this package were built not as a plugin, but a modification of the
+    # hoomd.md.pair module, we could have used this simple approach below.
+    # Sadly, we have to do some work to reimplement the critical parts of 
+    # md.pair.Pair
+    '''
     _cpp_class_name = "PotentialPairmLJ"
 
     def __init__(self, nlist, default_r_cut=None, default_r_on=0., mode='none'):
@@ -73,3 +80,35 @@ class mLJ(_pair.Pair):
             'params', 'particle_types',
             TypeParameterDict(epsilon=float, sigma=float, delta=float, len_keys=2))
         self._add_typeparam(params)
+    '''
+    _cpp_class_name = "PotentialPairmLJ"
+
+    def __init__(self, nlist, default_r_cut=None, default_r_on=0., mode='none'):
+        super().__init__(nlist, default_r_cut, default_r_on, mode)
+        params = TypeParameter(
+            'params', 'particle_types',
+            TypeParameterDict(epsilon=float, sigma=float, delta=float, len_keys=2))
+        self._add_typeparam(params)
+
+    def _attach(self):
+        # create the c++ mirror class
+        if not self._nlist._added:
+            self._nlist._add(self._simulation)
+        else:
+            if self._simulation != self._nlist._simulation:
+                raise RuntimeError("{} object's neighbor list is used in a "
+                                   "different simulation.".format(type(self)))
+        if not self.nlist._attached:
+            self.nlist._attach()
+        if isinstance(self._simulation.device, hoomd.device.CPU):
+            cls = getattr(_mlj_plugin, self._cpp_class_name)
+            self.nlist._cpp_obj.setStorageMode(
+                _md.NeighborList.storageMode.half)
+        else:
+            cls = getattr(_mlj_plugin, self._cpp_class_name + "GPU")
+            self.nlist._cpp_obj.setStorageMode(
+                _md.NeighborList.storageMode.full)
+        self._cpp_obj = cls(self._simulation.state._cpp_sys_def,
+                            self.nlist._cpp_obj)
+
+        super()._attach()

@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.9 FATAL_ERROR)
 
 # Name the plugin project
-project(example_plugin LANGUAGES C CXX)
+project(mlj_plugin LANGUAGES C CXX)
 
 # Find the installed HOOMD
 find_package(HOOMD 2.6.0 REQUIRED)
