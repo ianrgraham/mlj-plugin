@@ -4,4 +4,4 @@
 
 """Example python module."""
 
-from hoomd.mLJ_plugin import pair
+from hoomd.mlj_plugin import pair
