@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "HOOMD3",
+            "includePath": [
+                "${default}",
+                "/home/ian/Projects/else/hoomd-blue/",
+                "${workspaceFolder}/mLJ_plugin",
+                "/home/ian/anaconda3/envs/hoomd3-gpu/include",
+                "/home/ian/anaconda3/envs/hoomd3-gpu/include/python3.9"
+            ],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64"
+        }
+    ],
+    "version": 4
+}
