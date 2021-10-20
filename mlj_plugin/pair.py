@@ -4,20 +4,16 @@
 
 """Pair potentials."""
 
-import copy
-import warnings
-
-import hoomd
 from hoomd import _hoomd
 from hoomd.md import _md
-from hoomd.md import force
+from hoomd.mlj_plugin import _mlj_plugin
+import hoomd
 from hoomd.md.nlist import NList
 from hoomd.data.parameterdicts import ParameterDict, TypeParameterDict
 from hoomd.data.typeparam import TypeParameter
 import numpy as np
 from hoomd.data.typeconverter import (OnlyFrom, OnlyTypes, nonnegative_real)
 import hoomd.md.pair as _pair
-from hoomd.mlj_plugin import _mlj_plugin
 
 validate_nlist = OnlyTypes(NList)
 
@@ -112,5 +108,3 @@ class mLJ(_pair.Pair):
                 _md.NeighborList.storageMode.full)
         self._cpp_obj = cls(self._simulation.state._cpp_sys_def,
                             self.nlist._cpp_obj)
-
-        super()._attach()

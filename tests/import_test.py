@@ -1,4 +1,6 @@
 # From the tutorial on MD in HOOMD v3
+import sys, os
+# sys.setdlopenflags(os.RTLD_GLOBAL | os.RTLD_LAZY)
 
 import itertools
 import math
@@ -7,9 +9,11 @@ import tempfile
 from pathlib import Path
 
 import gsd.hoomd
-import hoomd.mlj_plugin.pair as mlj_plugin_pair
+import hoomd.mlj_plugin
 import hoomd
 import numpy
+
+mlj_plugin_pair = hoomd.mlj_plugin.pair
 
 m = 4
 N_particles = 4 * m**3

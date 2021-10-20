@@ -2,11 +2,10 @@
 # This file is part of the HOOMD-blue project, released under the BSD 3-Clause
 # License.
 
-"""Example python module."""
+"""Modified LJ potential module."""
 
-import hoomd
 from hoomd import _hoomd
 from hoomd.md import _md
-from hoomd.md import force;
+from hoomd.mlj_plugin import _mlj_plugin
 
 from hoomd.mlj_plugin import pair

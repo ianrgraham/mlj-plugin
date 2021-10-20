@@ -5,7 +5,7 @@
             "includePath": [
                 "${default}",
                 "/home/ian/Projects/else/hoomd-blue/",
-                "${workspaceFolder}/mLJ_plugin",
+                "${workspaceFolder}/mlj_plugin",
                 "/home/ian/anaconda3/envs/hoomd3-gpu/include",
                 "/home/ian/anaconda3/envs/hoomd3-gpu/include/python3.9"
             ],
