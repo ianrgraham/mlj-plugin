@@ -8,6 +8,7 @@ import copy
 import warnings
 
 import hoomd
+from hoomd import _hoomd
 from hoomd.md import _md
 from hoomd.md import force
 from hoomd.md.nlist import NList
@@ -90,6 +91,7 @@ class mLJ(_pair.Pair):
             TypeParameterDict(epsilon=float, sigma=float, delta=float, len_keys=2))
         self._add_typeparam(params)
 
+    # slightly modified with regard to the base class (md.Pair)
     def _attach(self):
         # create the c++ mirror class
         if not self._nlist._added:

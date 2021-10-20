@@ -16,7 +16,7 @@
 #error This header cannot be compiled by nvcc
 #endif
 
-//! Pair potential force compute for lj forces
+//! Pair potential force compute for mlj forces
 
 typedef PotentialPair<EvaluatorPairmLJ> PotentialPairmLJ;
 

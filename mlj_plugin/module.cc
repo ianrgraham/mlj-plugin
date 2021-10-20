@@ -4,6 +4,8 @@
 // Include the defined classes that are to be exported to python
 #include "mLJPotential.h"
 #include "hoomd/md/PotentialPair.h"
+#include "hoomd/ForceCompute.h"
+#include "hoomd/Compute.h"
 
 #include <pybind11/pybind11.h>
 // #include <hoomd/extern/pybind/include/pybind11/pybind11.h>
@@ -21,8 +23,9 @@ namespace py = pybind11;
 PYBIND11_MODULE(_mlj_plugin, m)
     {
     export_PotentialPair<PotentialPairmLJ>(m, "PotentialPairmLJ");
-
 #ifdef ENABLE_HIP
     export_PotentialPairGPU<PotentialPairmLJGPU, PotentialPairmLJ>(m, "PotentialPairmLJGPU");
 #endif
+    export_Compute(m);
+    export_ForceCompute(m);
     }

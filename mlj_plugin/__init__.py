@@ -4,4 +4,9 @@
 
 """Example python module."""
 
+import hoomd
+from hoomd import _hoomd
+from hoomd.md import _md
+from hoomd.md import force;
+
 from hoomd.mlj_plugin import pair
