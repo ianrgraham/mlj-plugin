@@ -1,4 +1,4 @@
-# mLJ_plugin
+# mlj-plugin
 
 A simple plugin to HOOMD-blue v3 to add a modified version of the standard
 Lennard-Jones potential
