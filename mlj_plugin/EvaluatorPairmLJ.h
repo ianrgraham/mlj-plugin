@@ -32,9 +32,9 @@
 #define HOSTDEVICE
 #endif
 
-//! Original to the LJ example that this plugin was constructed from
 //! Class for evaluating the LJ pair potential
-/*! <b>General Overview</b>
+/*! <b>Original</b>
+    <b>General Overview</b>
 
     EvaluatorPairLJ is a low level computation class that computes the LJ pair potential V(r). As
    the standard MD potential, it also serves as a well documented example of how to write additional
@@ -103,6 +103,15 @@
     These are related to the standard lj parameters sigma and epsilon by:
     - \a lj1 = 4.0 * epsilon * pow(sigma,12.0)
     - \a lj2 = 4.0 * epsilon * pow(sigma,6.0);
+
+    <b>Modifications</b>
+    We modify the LJ potential slightly to instead evaluate the function:
+    \f[ V_{\mathrm{LJ}}(r) = 4 \varepsilon \left[ \left( \frac{\sigma'}{r-\Delta} \right)^{12} -
+                                            \left( \frac{\sigma'}{r-\Delta} \right)^{6} \right] \f]
+    where
+    \f[ \sigma' = \sigma - \frac{\Delta}{2^{1/6}} \f]
+
+    This is similar to the LJ expand potential from LAMMPS, though
 
 */
 class EvaluatorPairmLJ
@@ -215,7 +224,7 @@ class EvaluatorPairmLJ
         // compute the force divided by r in force_divr
         if (rsq < rcutsq && lj1 != 0)
             {
-            // Next two lines are the only deliniation from the LJ potential
+            // Must take sqrt to subtract \Delta
             // original: Scalar r2inv = Scalar(1.0) / rsq;
             Scalar rinv = Scalar(1.0) / (fast::sqrt(rsq) - dlt); 
             Scalar r2inv = rinv * rinv;
@@ -227,7 +236,10 @@ class EvaluatorPairmLJ
 
             if (energy_shift)
                 {
-                Scalar rcut2inv = Scalar(1.0) / rcutsq;
+                // Also need to fix this
+                // original: Scalar rcut2inv = Scalar(1.0) / rcutsq;
+                Scalar rcutinv = Scalar(1.0) / (fast::sqrt(rsq) - dlt);
+                Scalar rcut2inv = rcutinv * rcutinv;
                 Scalar rcut6inv = rcut2inv * rcut2inv * rcut2inv;
                 pair_eng -= rcut6inv * (lj1 * rcut6inv - lj2);
                 }
@@ -257,6 +269,7 @@ class EvaluatorPairmLJ
     Scalar rcutsq; //!< Stored rcutsq from the constructor
     Scalar lj1;    //!< lj1 parameter extracted from the params passed to the constructor
     Scalar lj2;    //!< lj2 parameter extracted from the params passed to the constructor
+    // Add any additional fields
     Scalar dlt;    //!< dlt parameter extracted from the params passed to the constructor
     };
 

@@ -26,7 +26,7 @@ endif()
 
 # link the library to its dependencies
 target_link_libraries(_${COMPONENT_NAME}
-        PUBLIC HOOMD::_hoomd
+        PRIVATE HOOMD::_hoomd
         PUBLIC HOOMD::_md
         )
 
