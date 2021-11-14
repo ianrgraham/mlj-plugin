@@ -115,61 +115,63 @@
 
 */
 class EvaluatorPairmLJ
-    {
-    public:
+{
+public:
     //! Define the parameter type used by this pair potential evaluator
     struct param_type
-        {
+    {
         Scalar lj1;
         Scalar lj2;
         Scalar dlt;
 
-        DEVICE void load_shared(char*& ptr, unsigned int& available_bytes) { }
+        DEVICE void load_shared(char *&ptr, unsigned int &available_bytes) {}
 
-        HOSTDEVICE void allocate_shared(char*& ptr, unsigned int& available_bytes) const { }
+        HOSTDEVICE void allocate_shared(char *&ptr, unsigned int &available_bytes) const {}
 
 #ifdef ENABLE_HIP
         //! Set CUDA memory hints
         void set_memory_hint() const
-            {
+        {
             // default implementation does nothing
-            }
+        }
 #endif
 
 #ifndef __HIPCC__
-        param_type() : lj1(0), lj2(0), dlt(0){ }
+        param_type() : lj1(0), lj2(0), dlt(0)
+        {
+        }
 
         param_type(pybind11::dict v, bool managed = false)
-            {
+        {
             auto sigma(v["sigma"].cast<Scalar>());
             auto epsilon(v["epsilon"].cast<Scalar>());
             auto delta(v["delta"].cast<Scalar>());
-            auto dsigma = sigma - delta/pow(2.0, 1. / 6.);
+            auto dsigma = sigma - delta / pow(2.0, 1. / 6.);
             lj1 = 4.0 * epsilon * pow(dsigma, 12.0);
             lj2 = 4.0 * epsilon * pow(dsigma, 6.0);
             dlt = delta;
-            }
+        }
 
         // this constructor facilitates unit testing
         param_type(Scalar sigma, Scalar epsilon, Scalar delta, bool managed = false)
-            {
-            auto dsigma = sigma - delta/pow(2.0, 1. / 6.);
+        {
+            auto dsigma = sigma - delta / pow(2.0, 1. / 6.);
             lj1 = 4.0 * epsilon * pow(dsigma, 12.0);
             lj2 = 4.0 * epsilon * pow(dsigma, 6.0);
             dlt = delta;
-            }
+        }
 
         pybind11::dict asDict()
-            {
+        {
             pybind11::dict v;
             auto sigma6 = lj1 / lj2;
-            v["sigma"] = pow(sigma6, 1. / 6.) + dlt/pow(2.0, 1. / 6.);
+            v["sigma"] = pow(sigma6, 1. / 6.) + dlt / pow(2.0, 1. / 6.);
             v["epsilon"] = lj2 / (sigma6 * 4);
             v["delta"] = dlt;
             return v;
-            }
-#endif
         }
+#endif
+    }
 #ifdef SINGLE_PRECISION
     __attribute__((aligned(8)));
 #else
@@ -181,32 +183,32 @@ class EvaluatorPairmLJ
         \param _rcutsq Squared distance at which the potential goes to 0
         \param _params Per type pair parameters of this potential
     */
-    DEVICE EvaluatorPairmLJ(Scalar _rsq, Scalar _rcutsq, const param_type& _params)
+    DEVICE EvaluatorPairmLJ(Scalar _rsq, Scalar _rcutsq, const param_type &_params)
         : rsq(_rsq), rcutsq(_rcutsq), lj1(_params.lj1), lj2(_params.lj2), dlt(_params.dlt)
-        {
-        }
+    {
+    }
 
     //! LJ doesn't use diameter
     DEVICE static bool needsDiameter()
-        {
+    {
         return false;
-        }
+    }
     //! Accept the optional diameter values
     /*! \param di Diameter of particle i
         \param dj Diameter of particle j
     */
-    DEVICE void setDiameter(Scalar di, Scalar dj) { }
+    DEVICE void setDiameter(Scalar di, Scalar dj) {}
 
     //! LJ doesn't use charge
     DEVICE static bool needsCharge()
-        {
+    {
         return false;
-        }
+    }
     //! Accept the optional diameter values
     /*! \param qi Charge of particle i
         \param qj Charge of particle j
     */
-    DEVICE void setCharge(Scalar qi, Scalar qj) { }
+    DEVICE void setCharge(Scalar qi, Scalar qj) {}
 
     //! Evaluate the force and energy
     /*! \param force_divr Output parameter to write the computed force divided by r.
@@ -219,58 +221,58 @@ class EvaluatorPairmLJ
         \return True if they are evaluated or false if they are not because
         we are beyond the cutoff
     */
-    DEVICE bool evalForceAndEnergy(Scalar& force_divr, Scalar& pair_eng, bool energy_shift)
-        {
+    DEVICE bool evalForceAndEnergy(Scalar &force_divr, Scalar &pair_eng, bool energy_shift)
+    {
         // compute the force divided by r in force_divr
         if (rsq < rcutsq && lj1 != 0)
-            {
+        {
             // Must take sqrt to subtract \Delta
             // original: Scalar r2inv = Scalar(1.0) / rsq;
-            Scalar rinv = Scalar(1.0) / (fast::sqrt(rsq) - dlt); 
+            Scalar rinv = Scalar(1.0) / (fast::sqrt(rsq) - dlt);
             Scalar r2inv = rinv * rinv;
-            
+
             Scalar r6inv = r2inv * r2inv * r2inv;
             force_divr = r2inv * r6inv * (Scalar(12.0) * lj1 * r6inv - Scalar(6.0) * lj2);
 
             pair_eng = r6inv * (lj1 * r6inv - lj2);
 
             if (energy_shift)
-                {
+            {
                 // Also need to fix this
                 // original: Scalar rcut2inv = Scalar(1.0) / rcutsq;
                 Scalar rcutinv = Scalar(1.0) / (fast::sqrt(rsq) - dlt);
                 Scalar rcut2inv = rcutinv * rcutinv;
                 Scalar rcut6inv = rcut2inv * rcut2inv * rcut2inv;
                 pair_eng -= rcut6inv * (lj1 * rcut6inv - lj2);
-                }
-            return true;
             }
+            return true;
+        }
         else
             return false;
-        }
+    }
 
 #ifndef __HIPCC__
     //! Get the name of this potential
     /*! \returns The potential name.
      */
     static std::string getName()
-        {
+    {
         return std::string("lj");
-        }
+    }
 
     std::string getShapeSpec() const
-        {
+    {
         throw std::runtime_error("Shape definition not supported for this pair potential.");
-        }
+    }
 #endif
 
-    protected:
+protected:
     Scalar rsq;    //!< Stored rsq from the constructor
     Scalar rcutsq; //!< Stored rcutsq from the constructor
     Scalar lj1;    //!< lj1 parameter extracted from the params passed to the constructor
     Scalar lj2;    //!< lj2 parameter extracted from the params passed to the constructor
     // Add any additional fields
-    Scalar dlt;    //!< dlt parameter extracted from the params passed to the constructor
-    };
+    Scalar dlt; //!< dlt parameter extracted from the params passed to the constructor
+};
 
 #endif // __PAIR_EVALUATOR_mLJ_H__

@@ -9,8 +9,8 @@
 #include "EvaluatorPairmLJ.h"
 #include "hoomd/md/PotentialPairGPU.cuh"
 
-hipError_t gpu_compute_mljtemp_forces(const pair_args_t& pair_args,
-                                     const EvaluatorPairmLJ::param_type* d_params)
-    {
+hipError_t gpu_compute_mljtemp_forces(const pair_args_t &pair_args,
+                                      const EvaluatorPairmLJ::param_type *d_params)
+{
     return gpu_compute_pair_forces<EvaluatorPairmLJ>(pair_args, d_params);
-    }
+}
